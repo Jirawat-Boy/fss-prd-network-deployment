@@ -433,7 +433,7 @@ resource "aws_eip" "fortigate_primary_public_eip" {
 
 # FortiGate Instances
 resource "aws_instance" "fortigate_primary" {
-  ami                  = "ami-054e2eb63dc3c2f1b"
+  ami                  = "ami-09e2c02f91eb0653f"
   instance_type        = var.fortigate_instance_type
   key_name             = var.create_key_pair ? aws_key_pair.fortigate_key_pair[0].key_name : var.key_pair_name
   iam_instance_profile = aws_iam_instance_profile.fortigate_ha_profile.name
@@ -477,7 +477,7 @@ resource "aws_instance" "fortigate_primary" {
 
 resource "aws_instance" "fortigate_secondary" {
   count                = var.enable_ha ? 1 : 0
-  ami                  = "ami-054e2eb63dc3c2f1b"
+  ami                  = "ami-09e2c02f91eb0653f"
   instance_type        = var.fortigate_instance_type
   key_name             = var.create_key_pair ? aws_key_pair.fortigate_key_pair[0].key_name : var.key_pair_name
   iam_instance_profile = aws_iam_instance_profile.fortigate_ha_profile.name

@@ -79,7 +79,7 @@ config system ha
     config ha-mgmt-interfaces
         edit 1
             set interface "port1"
-            set gateway 10.120.9.1
+            set gateway 10.22.7.1
         next
     end
     set override disable
@@ -100,7 +100,7 @@ end
 %{endif~}
 
 config system dns
-    set primary 10.120.0.2
+    set primary 10.22.0.2
     set secondary 96.45.46.46
     set protocol cleartext dot
     set server-hostname "globalsdns.fortinet.net"
