@@ -29,13 +29,18 @@ output "vpc_attachment_id" {
 }
 
 output "custom_route_table_id" {
-  description = "ID of the custom route table"
+  description = "ID of the custom route table (ips)"
   value       = aws_ec2_transit_gateway_route_table.custom.id
 }
 
+output "custom_route_table_spoke_id" {
+  description = "ID of the custom route table (spoke)"
+  value       = aws_ec2_transit_gateway_route_table.custom2.id
+}
+
 output "default_route_table_id" {
-  description = "ID of the default route table"
-  value       = data.aws_ec2_transit_gateway_route_table.default.id
+  description = "ID of the default route table (null if default association is disabled)"
+  value       = var.default_route_table_association == "enable" ? data.aws_ec2_transit_gateway_route_table.default[0].id : null
 }
 
 output "security_group_id" {

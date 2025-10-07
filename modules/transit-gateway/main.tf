@@ -38,8 +38,9 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "main" {
   })
 }
 
-# Default Route Table (automatically created by TGW)
+# Default Route Table (only if default association is enabled)
 data "aws_ec2_transit_gateway_route_table" "default" {
+  count      = var.default_route_table_association == "enable" ? 1 : 0
   depends_on = [aws_ec2_transit_gateway.main]
   
   filter {
@@ -58,7 +59,7 @@ resource "aws_ec2_transit_gateway_route_table" "custom" {
   transit_gateway_id = aws_ec2_transit_gateway.main.id
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-tgw-ips-rt"
+    Name = "${var.project_name}-tgw-rtb-ips"
     Type = "RouteTable"
   })
 }
@@ -68,7 +69,7 @@ resource "aws_ec2_transit_gateway_route_table" "custom2" {
   transit_gateway_id = aws_ec2_transit_gateway.main.id
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-tgw-spoke-rt"
+    Name = "${var.project_name}-tgw-rtb-spoke"
     Type = "RouteTable"
   })
 }

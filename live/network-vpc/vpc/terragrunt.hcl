@@ -1,6 +1,6 @@
 locals {
   # Project configuration
-  project_name = "fss-prd-network"
+  project_name = "fss-prd"
   
   availability_zones = [
     "ap-southeast-7a",  # Primary AZ

@@ -102,3 +102,9 @@ variable "aws_region" {
   type        = string
   default     = "ap-southeast-7"
 }
+
+variable "fortigate_ami_id" {
+  description = "Custom FortiGate AMI ID. If not specified, will use data source to find latest AMI based on version and license type"
+  type        = string
+  default     = ""
+}

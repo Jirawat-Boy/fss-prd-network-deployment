@@ -10,7 +10,7 @@ resource "aws_vpc" "vpc" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-vpc"
+      Name = "${var.project_name}-vpc-network"
     }
   )
 }
@@ -23,7 +23,7 @@ resource "aws_internet_gateway" "igw" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-igw-network"
+      Name = "${var.project_name}-igw"
     }
   )
 }
@@ -74,7 +74,7 @@ resource "aws_subnet" "network_mgmt_subnet" {
   tags = merge(
     var.tags,
     {
-      Name = "${var.project_name}-subnet-mgmt-${substr(element(var.availability_zones, count.index), -1, 1)}"
+      Name = "${var.project_name}-subnet-manage-${substr(element(var.availability_zones, count.index), -1, 1)}"
       Type = "Management"
     }
   )

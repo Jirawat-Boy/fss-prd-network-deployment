@@ -1,6 +1,6 @@
 locals {
   # Project configuration
-  project_name = "fss-prd-network"
+  project_name = "fss-prd"
   
   availability_zones = [
     "ap-southeast-7a",
@@ -13,9 +13,13 @@ locals {
   # FortiGate Configuration
   fortigate_instance_type = "c7i.xlarge"       # FortiGate instance size (supports up to 4 ENIs)
   fortigate_license_type  = "payg"            # payg (Pay As You Go) or byol (Bring Your Own License)
-  fortigate_version      = "7.2.12"           # FortiGate firmware version
-  key_pair_name          = "fortigate-prd-network-ssh-instance-key"     # AWS Key Pair for SSH access
+  fortigate_version      = "7.4.9"           # FortiGate firmware version
+  key_pair_name          = "fss-prd-fortigate-ssh-instance-key"     # AWS Key Pair for SSH access
   create_key_pair        = true              # Auto-create key pair during deployment
+  
+  # Leave empty to auto-select latest AMI based on version and license type
+  fortigate_ami_id       = "ami-0fa96232e73141f6c"  # Specify custom AMI ID if needed
+  
   
   # High Availability
   enable_ha = true                            # Enable HA (2 FortiGate instances)
@@ -69,6 +73,7 @@ inputs = {
   fortigate_instance_type  = local.fortigate_instance_type
   fortigate_license_type   = local.fortigate_license_type
   fortigate_version        = local.fortigate_version
+  fortigate_ami_id         = try(local.fortigate_ami_id, "")  # Custom AMI ID (optional)
   key_pair_name            = local.key_pair_name
   create_key_pair          = local.create_key_pair
   

@@ -106,3 +106,14 @@ output "private_key_content" {
   value       = var.create_key_pair && var.public_key_content == "" ? tls_private_key.fortigate_key[0].private_key_pem : null
   sensitive   = true
 }
+
+# AMI Information
+output "fortigate_ami_id" {
+  description = "AMI ID used for FortiGate instances"
+  value       = local.fortigate_ami_id
+}
+
+output "fortigate_ami_name" {
+  description = "Name of the AMI used for FortiGate instances"
+  value       = var.fortigate_ami_id != "" ? "Custom AMI: ${var.fortigate_ami_id}" : data.aws_ami.fortigate[0].name
+}

@@ -1,6 +1,6 @@
 inputs = {
   aws_configuration = {
-    "profile" = "trueidc-deploy"
+    "profile" = "iac-deploy"
     "region" = "ap-southeast-7"   
     "skip_region_validation"  = true
   }
@@ -9,9 +9,9 @@ inputs = {
   #   "role_arn"     = "arn:aws:iam::767828768839:role/poc-ntb-top"
   #   "session_name" = "network-account-1"
   #   }
-  
-  s3_bucket_name = "fss-network-prd-landing-zone"
-  dynamodb_table_name = "fss-network-prd-landing-zone"
+
+  s3_bucket_name = "fss-prd-ldz-terraform-state"
+  dynamodb_table_name = "fss-prd-ldz-terraform-locking"
 
   tags = {
     "environment"    = "PRD"

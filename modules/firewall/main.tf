@@ -1,5 +1,37 @@
 data "aws_caller_identity" "current" {}
 
+# FortiGate AMI Data Source
+data "aws_ami" "fortigate" {
+  count       = var.fortigate_ami_id == "" ? 1 : 0
+  most_recent = true
+  owners      = ["679593333241"] # Fortinet AWS Account ID
+
+  filter {
+    name   = "name"
+    values = ["FortiGate-VM64-AWSONDEMAND*${var.fortigate_version}*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "state"
+    values = ["available"]
+  }
+}
+
+# Local value to determine which AMI to use
+locals {
+  fortigate_ami_id = var.fortigate_ami_id != "" ? var.fortigate_ami_id : data.aws_ami.fortigate[0].id
+}
+
 # IAM role for FortiGate HA operations
 resource "aws_iam_role" "fortigate_ha_role" {
   name = "${var.project_name}-fortigate-ha-role"
@@ -47,7 +79,9 @@ resource "aws_iam_role_policy" "fortigate_ha_policy" {
           "ec2:DisassociateAddress",
           "ec2:ModifyNetworkInterfaceAttribute",
           "ec2:DescribeTags",
-          "ec2:CreateTags"
+          "ec2:CreateTags",
+          "ec2:AssignPrivateIpAddresses",
+          "ec2:UnassignPrivateIpAddresses"
         ]
         Resource = "*"
       }
@@ -433,7 +467,7 @@ resource "aws_eip" "fortigate_primary_public_eip" {
 
 # FortiGate Instances
 resource "aws_instance" "fortigate_primary" {
-  ami                  = "ami-09e2c02f91eb0653f"
+  ami                  = local.fortigate_ami_id
   instance_type        = var.fortigate_instance_type
   key_name             = var.create_key_pair ? aws_key_pair.fortigate_key_pair[0].key_name : var.key_pair_name
   iam_instance_profile = aws_iam_instance_profile.fortigate_ha_profile.name
@@ -477,7 +511,7 @@ resource "aws_instance" "fortigate_primary" {
 
 resource "aws_instance" "fortigate_secondary" {
   count                = var.enable_ha ? 1 : 0
-  ami                  = "ami-09e2c02f91eb0653f"
+  ami                  = local.fortigate_ami_id
   instance_type        = var.fortigate_instance_type
   key_name             = var.create_key_pair ? aws_key_pair.fortigate_key_pair[0].key_name : var.key_pair_name
   iam_instance_profile = aws_iam_instance_profile.fortigate_ha_profile.name

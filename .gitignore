@@ -1,6 +1,12 @@
 # Local .terraform directories
 **/.terraform/*
 
+# Terraform lock files
+.terraform.lock.hcl
+
+# Backend configuration files
+backend.tf
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

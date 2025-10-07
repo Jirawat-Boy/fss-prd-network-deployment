@@ -1,6 +1,6 @@
 locals {
   # Project configuration
-  project_name = "fss-prd-network"
+  project_name = "fss-prd"
   
   availability_zones = [
     "ap-southeast-7a",
@@ -12,8 +12,8 @@ locals {
   
   # Transit Gateway Settings
   auto_accept_shared_attachments  = "disable"  # Disable auto-accept of spoke account attachments
-  default_route_table_association = "enable"  # Enable auto-association with default route table
-  default_route_table_propagation = "enable"  # Enable auto-propagation to default route table
+  default_route_table_association = "disable"  # Disable auto-association with default route table
+  default_route_table_propagation = "disable"  # Disable auto-propagation to default route table
   dns_support                     = "enable"   # Enable DNS resolution
   vpn_ecmp_support               = "enable"   # Enable VPN ECMP
   enable_multicast_support       = false      # Disable multicast (not needed for most use cases)
@@ -57,7 +57,6 @@ inputs = {
   # Tags
   tags = {
     Project     = local.project_name
-    Module      = "transit-gateway"
     Environment = "PRD"
     Created-by  = "TrueIDC"
     Created-at  = formatdate("DD-MMM-YY", timestamp())
