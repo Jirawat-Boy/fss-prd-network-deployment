@@ -23,10 +23,7 @@ output "transit_gateway_propagation_default_route_table_id" {
   value       = aws_ec2_transit_gateway.main.propagation_default_route_table_id
 }
 
-output "vpc_attachment_id" {
-  description = "ID of the VPC attachment"
-  value       = aws_ec2_transit_gateway_vpc_attachment.main.id
-}
+# VPC attachment outputs moved to transit-gateway-attachment module
 
 output "custom_route_table_id" {
   description = "ID of the custom route table (ips)"
@@ -43,10 +40,10 @@ output "default_route_table_id" {
   value       = var.default_route_table_association == "enable" ? data.aws_ec2_transit_gateway_route_table.default[0].id : null
 }
 
-output "security_group_id" {
-  description = "ID of the Transit Gateway security group"
-  value       = aws_security_group.tgw_sg.id
-}
+# output "security_group_id" {
+#   description = "ID of the Transit Gateway security group"
+#   value       = aws_security_group.tgw_sg.id
+# }
 
 output "transit_gateway_cidr_blocks" {
   description = "List of associated CIDR blocks"

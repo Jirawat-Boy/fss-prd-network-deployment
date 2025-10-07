@@ -4,20 +4,7 @@ variable "project_name" {
   default     = "project-default"
 }
 
-variable "vpc_id" {
-  description = "VPC ID to attach to Transit Gateway"
-  type        = string
-}
-
-variable "tgw_subnet_ids" {
-  description = "Subnet IDs for Transit Gateway attachments"
-  type        = list(string)
-}
-
-variable "availability_zones" {
-  description = "List of availability zones"
-  type        = list(string)
-}
+# VPC-specific variables moved to transit-gateway-attachment module
 
 variable "amazon_side_asn" {
   description = "The Autonomous System Number (ASN) for the Amazon side of the gateway"
