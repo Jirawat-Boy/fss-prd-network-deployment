@@ -1,25 +1,16 @@
 locals {
   # Project configuration
-  project_name = "fss-prd"
+  project_name = "fss-nonprd"
   
   availability_zones = [
     "ap-southeast-7a",
     "ap-southeast-7b"
   ]
   
-  # TGW routes -  - TGW routes disabled by default
-  tgw_routes = [
-    # {
-    #   cidr_block         = "10.0.0.0/8"
-    #   transit_gateway_id = "tgw-000000000000000"
-    # }
-  ]
-  
-  # Private routes configuration - TGW routes disabled by default
-  private_routes = [
-    # {
-    #   cidr_block         = "10.0.0.0/8"
-    #   transit_gateway_id = "tgw-0000000000000"
+  # Remote networks CIDR blocks
+  remote_networks = [
+    "10.14.0.0/16",
+    "10.15.0.0/16"
   ]
   
   mgmt_routes      = []
@@ -27,7 +18,7 @@ locals {
 }
 
 terraform {
-  source = "../../../modules/routing"
+  source = "../../../../modules/routing"
 }
 
 include "root" {
@@ -48,6 +39,14 @@ dependency "vpc" {
   }
 }
 
+dependency "tgw" {
+  config_path = "../../../fss-prd-network/network-tgw"
+  
+  mock_outputs = {
+    transit_gateway_id = "tgw-mock"
+  }
+}
+
 inputs = {
   # Basic configuration
   project_name       = local.project_name
@@ -64,16 +63,28 @@ inputs = {
   mgmt_subnet_ids      = dependency.vpc.outputs.network_mgmt_subnet_ids
   heartbeat_subnet_ids = dependency.vpc.outputs.network_heartbeat_subnet_ids
   
-  # Custom routes
-  private_routes   = local.private_routes
+  # Custom routes - Create TGW routes dynamically
+  tgw_routes = [
+    for cidr in local.remote_networks : {
+      cidr_block         = cidr
+      transit_gateway_id = dependency.tgw.outputs.transit_gateway_id
+    }
+  ]
+  
+  private_routes = [
+    for cidr in local.remote_networks : {
+      cidr_block         = cidr
+      transit_gateway_id = dependency.tgw.outputs.transit_gateway_id
+    }
+  ]
+  
   mgmt_routes      = local.mgmt_routes
-  tgw_routes       = local.tgw_routes
   heartbeat_routes = local.heartbeat_routes
   
   # Tags
   tags = {
     Project     = local.project_name
-    Environment = "PRD"
+    Environment = "NONPRD"
     Created-by  = "TrueIDC"
     Created-at  = formatdate("DD-MMM-YY", timestamp())
     ManagedBy   = "terraform"

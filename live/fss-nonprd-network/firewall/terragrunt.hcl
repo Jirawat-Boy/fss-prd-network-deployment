@@ -1,32 +1,31 @@
 locals {
   # Project configuration
-  project_name = "fss-prd"
+  project_name = "fss-nonprd"
   
   availability_zones = [
-    "ap-southeast-7a",
-    "ap-southeast-7b"
+    "ap-southeast-7a"
   ]
   
   # AWS Configuration
   aws_region = "ap-southeast-7"
   
   # FortiGate Configuration
-  fortigate_instance_type = "c7i.xlarge"       # FortiGate instance size (supports up to 4 ENIs)
+  fortigate_instance_type = "c7i.large"       # FortiGate instance size (supports up to 4 ENIs)
   fortigate_license_type  = "payg"            # payg (Pay As You Go) or byol (Bring Your Own License)
   fortigate_version      = "7.4.9"           # FortiGate firmware version
-  key_pair_name          = "fss-prd-fortigate-ssh-instance-key"     # AWS Key Pair for SSH access
+  key_pair_name          = "fss-nonprd-fortigate-ssh-instance-key"     # AWS Key Pair for SSH access
   create_key_pair        = true              # Auto-create key pair during deployment
   
   # Leave empty to auto-select latest AMI based on version and license type
   fortigate_ami_id       = "ami-0fa96232e73141f6c"  # Specify custom AMI ID if needed
   
   
-  # High Availability
-  enable_ha = true                            # Enable HA (2 FortiGate instances)
+  # Single Firewall (No HA)
+  # enable_ha = false                         # Single instance firewall
   
   # Management Access
   admin_cidr_blocks = [
-    "10.22.0.0/16",                            # Corporate network
+    "10.13.0.0/16",                            # Corporate network
     # "49.237.21.103/32"                         # External management network
   ]
   
@@ -35,7 +34,7 @@ locals {
 }
 
 terraform {
-  source = "../../modules/firewall"
+  source = "../../../modules/firewall-single"
 }
 
 include "root" {
@@ -50,7 +49,7 @@ dependency "vpc" {
     network_public_subnet_ids     = ["subnet-mock1", "subnet-mock2"]
     network_private_subnet_ids    = ["subnet-mock3", "subnet-mock4"]
     network_mgmt_subnet_ids       = ["subnet-mock7", "subnet-mock8"]
-    network_heartbeat_subnet_ids  = ["subnet-mock9", "subnet-mock10"]
+    # heartbeat_subnet_ids not needed for single firewall
   }
 }
 
@@ -67,7 +66,7 @@ inputs = {
   public_subnet_ids    = dependency.vpc.outputs.network_public_subnet_ids
   private_subnet_ids   = dependency.vpc.outputs.network_private_subnet_ids
   mgmt_subnet_ids      = dependency.vpc.outputs.network_mgmt_subnet_ids
-  heartbeat_subnet_ids = dependency.vpc.outputs.network_heartbeat_subnet_ids
+  # heartbeat_subnet_ids not needed for single firewall
   
   # FortiGate Configuration
   fortigate_instance_type  = local.fortigate_instance_type
@@ -77,8 +76,10 @@ inputs = {
   key_pair_name            = local.key_pair_name
   create_key_pair          = local.create_key_pair
   
-  # High Availability
-  enable_ha = local.enable_ha
+  # Single Firewall Configuration - Custom Private IPs
+  mgmt_private_ip    = "10.13.7.254"   # Management interface IP
+  public_private_ip  = "10.13.1.254"   # Public interface IP  
+  private_private_ip = "10.13.3.254"   # Private interface IP
   
   # Security Configuration
   admin_cidr_blocks        = local.admin_cidr_blocks
@@ -87,7 +88,7 @@ inputs = {
   # Tags
   tags = {
     Project     = local.project_name
-    Environment = "PRD"
+    Environment = "NONPRD"
     Created-by  = "TrueIDC"
     Created-at  = formatdate("DD-MMM-YY", timestamp())
     ManagedBy   = "terraform"

@@ -20,7 +20,7 @@ locals {
 }
 
 terraform {
-  source = "../../modules/transit-gateway"
+  source = "../../../modules/transit-gateway"
 }
 
 include "root" {

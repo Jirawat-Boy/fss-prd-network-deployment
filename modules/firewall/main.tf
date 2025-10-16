@@ -66,7 +66,6 @@ resource "aws_iam_role_policy" "fortigate_ha_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ec2:DescribeInstances",
           "ec2:DescribeRouteTables",
           "ec2:DescribeNetworkInterfaces",
           "ec2:DescribeVpcs",

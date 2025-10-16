@@ -9,7 +9,7 @@ locals {
 }
 
 terraform {
-  source = "../../../modules/vpc"
+  source = "../../../../modules/vpc"
 }
 
 include "root" {

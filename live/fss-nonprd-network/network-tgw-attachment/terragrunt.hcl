@@ -1,14 +1,14 @@
 locals {
   # Project configuration
-  project_name = "fss-prd"
+  project_name = "fss-nonprd"
   
   # Attachment Configuration
-  attachment_name = "fss-prd-network-tgw"  # Name for this specific attachment
+  attachment_name = "fss-nonprd-network-tgw"  # Name for this specific attachment
   
   # VPC Attachment Settings
   dns_support             = "enable"   # Enable DNS resolution through TGW
   ipv6_support           = "disable"  # Disable IPv6 support
-  appliance_mode_support = "enable"  # Enable appliance mode
+  appliance_mode_support = "disable"  # Disable appliance mode
   
   # Route Table Configuration (optional)
   # Leave empty strings to skip association/propagation
@@ -37,7 +37,7 @@ locals {
 }
 
 terraform {
-  source = "../../modules/transit-gateway-attachment"
+  source = "../../../modules/transit-gateway-attachment"
 }
 
 include "root" {
@@ -54,7 +54,7 @@ dependency "vpc" {
 }
 
 dependency "tgw" {
-  config_path = "../network-tgw"
+  config_path = "../../fss-prd-network/network-tgw"  # Reference PRD TGW
   
   mock_outputs = {
     transit_gateway_id           = "tgw-mock"
@@ -77,8 +77,8 @@ inputs = {
   ipv6_support           = local.ipv6_support
   appliance_mode_support = local.appliance_mode_support
   
-  # Route Table Configuration (use TGW IPS route table for inspection)
-  route_table_association_id = dependency.tgw.outputs.custom_route_table_id
+  # Route Table Configuration (use TGW spoke route table for nonprd)
+  route_table_association_id = dependency.tgw.outputs.custom_route_table_spoke_id
   route_table_propagation_id = ""  # No propagation - manual route control only
   
   # Custom routing (optional)
@@ -88,7 +88,7 @@ inputs = {
   # Tags
   tags = {
     Project     = local.project_name
-    Environment = "PRD"
+    Environment = "NONPRD"
     Created-by  = "TrueIDC"
     Created-at  = formatdate("DD-MMM-YY", timestamp())
     ManagedBy   = "terraform"
